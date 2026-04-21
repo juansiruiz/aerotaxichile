@@ -1,0 +1,125 @@
+# ─── AeroTaxi Chile — Stack completo para Hostinger VPS ────────────────────
+#
+# Uso:
+#   cp .env.production.example .env.production
+#   # editar .env.production con los valores reales
+#   docker compose --env-file .env.production up -d --build
+#
+# Servicios:
+#   db       → PostgreSQL 16 (puerto 5432, solo red interna)
+#   api      → Hono API (puerto 4000, expuesto a nginx)
+#   web      → Next.js (puerto 3000, expuesto a nginx)
+#   nginx    → Reverse proxy + SSL (puertos 80 y 443)
+
+services:
+  # ── PostgreSQL ─────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: aerotaxi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER:-aerotaxi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB:       ${POSTGRES_DB:-aerotaxichile}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - aerotaxi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aerotaxi} -d ${POSTGRES_DB:-aerotaxichile}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API (Hono) ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: aerotaxi-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV:          production
+      PORT:              4000
+      DATABASE_URL:      postgresql://${POSTGRES_USER:-aerotaxi}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-aerotaxichile}
+      JWT_SECRET:        ${JWT_SECRET}
+      ALLOWED_ORIGINS:   ${ALLOWED_ORIGINS}
+      API_BASE_URL:      ${API_BASE_URL}
+      VAPID_PUBLIC_KEY:  ${VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT:     ${VAPID_SUBJECT}
+    volumes:
+      - uploads:/app/apps/api/public/uploads
+    networks:
+      - aerotaxi-net
+    expose:
+      - "4000"
+
+  # ── Web (Next.js) ──────────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL:             ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_WHATSAPP_NUMBER:     ${NEXT_PUBLIC_WHATSAPP_NUMBER}
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY:    ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+        NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+    container_name: aerotaxi-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      PORT:     3000
+      HOSTNAME: 0.0.0.0
+    networks:
+      - aerotaxi-net
+    expose:
+      - "3000"
+
+  # ── Nginx (reverse proxy + SSL) ────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: aerotaxi-nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - uploads:/var/www/uploads:ro
+    networks:
+      - aerotaxi-net
+
+  # ── Certbot (SSL auto-renew con Let's Encrypt) ─────────────────────────────
+  certbot:
+    image: certbot/certbot
+    container_name: aerotaxi-certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+# ── Red interna ─────────────────────────────────────────────────────────────
+networks:
+  aerotaxi-net:
+    driver: bridge
+
+# ── Volúmenes persistentes ──────────────────────────────────────────────────
+volumes:
+  pgdata:
+    driver: local
+  uploads:
+    driver: local

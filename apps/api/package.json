@@ -1,0 +1,37 @@
+{
+  "name": "@aerotaxi/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "tsup",
+    "start": "tsx src/index.ts",
+    "start:prod": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@aerotaxi/db": "workspace:*",
+    "@aerotaxi/shared": "workspace:*",
+    "@hono/node-server": "^1.14.1",
+    "@hono/zod-validator": "^0.7.6",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.43.1",
+    "firebase-admin": "^13.3.0",
+    "hono": "^4.7.7",
+    "jsonwebtoken": "^9.0.2",
+    "postgres": "^3.4.9",
+    "web-push": "^3.6.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.15.3",
+    "@types/web-push": "^3.6.4",
+    "tsup": "^8.5.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

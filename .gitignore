@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.next
+.turbo
+
+# Environment files
+.env
+.env.local
+.env.production
+!*.env.production.example
+!.env.production.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+logs/
+
+# Editor
+.vscode
+.idea
+
+# Claude Code (local settings, no subir al repo)
+.claude/
+
+# Drizzle
+drizzle/
+
+# Deploy / runtime
+backups/
+certbot/conf/
+certbot/www/
+apps/api/public/uploads/
+apps/web/.next/standalone/
+apps/web/.next/cache/
+
+# Next.js standalone assets
+apps/web/public/uploads/

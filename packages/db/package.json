@@ -1,0 +1,35 @@
+{
+  "name": "@aerotaxi/db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx --env-file=.env src/seed.ts",
+    "seed:content": "tsx --env-file=.env src/seed-content.ts",
+    "seed:bookings": "tsx --env-file=.env src/seed-bookings.ts",
+    "db:migrate-prices": "tsx --env-file=.env src/migrate-prices.ts",
+    "db:migrate-admin-confirm": "tsx --env-file=.env src/migrate-admin-confirm.ts",
+    "seed:comunas": "tsx --env-file=.env src/seed-comunas.ts",
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aerotaxi/shared": "workspace:*",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.43.1",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
