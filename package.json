@@ -11,6 +11,9 @@
     "db:studio": "pnpm --filter @aerotaxi/db studio",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
   },
+  "dependencies": {
+    "tsup": "^8.5.1"
+  },
   "devDependencies": {
     "prettier": "^3.5.3",
     "turbo": "^2.4.4",
