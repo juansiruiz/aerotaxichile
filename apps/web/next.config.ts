@@ -8,6 +8,17 @@ const nextConfig: NextConfig = {
   experimental: {
     // Habilita React Server Components optimizaciones
   },
+  // Proxy /api/* → API Hono local (puerto 4000)
+  // Permite que browser y Next.js usen el mismo origen, sin CORS.
+  async rewrites() {
+    const apiPort = process.env['API_PORT'] ?? '4000'
+    return [
+      {
+        source: '/api/:path*',
+        destination: `http://localhost:${apiPort}/:path*`,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {

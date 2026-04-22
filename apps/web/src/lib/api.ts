@@ -1,4 +1,6 @@
-const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000'
+// En producción (Hostinger) Next.js proxia /api/* → Hono API local.
+// En desarrollo local se puede sobreescribir con NEXT_PUBLIC_API_URL=http://localhost:4000
+const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? '/api'
 
 type FetchOptions = RequestInit & { token?: string }
 
