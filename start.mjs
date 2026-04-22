@@ -25,7 +25,7 @@ if (!existsSync(apiEntry)) {
   process.exit(1)
 }
 
-const api = spawn('node', [apiEntry], {
+const api = spawn(process.execPath, [apiEntry], {
   cwd: resolve(__dir, 'apps/api'),
   env: { ...process.env, PORT: String(API_PORT) },
   stdio: 'inherit',
@@ -47,7 +47,7 @@ if (!existsSync(standaloneServer)) {
 
 console.log(`✔ Servidor Next.js standalone: ${standaloneServer}`)
 
-const web = spawn('node', [standaloneServer], {
+const web = spawn(process.execPath, [standaloneServer], {
   cwd: resolve(__dir, 'apps/web/.next/standalone/apps/web'),
   env: {
     ...process.env,
