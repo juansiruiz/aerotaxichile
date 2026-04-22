@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node build.mjs",
+    "deploy": "node deploy.mjs",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
@@ -15,7 +16,9 @@
     "tsup": "^8.5.1"
   },
   "devDependencies": {
+    "archiver": "^7.0.1",
     "prettier": "^3.5.3",
+    "ssh2": "^1.17.0",
     "turbo": "^2.4.4",
     "typescript": "^5.8.3"
   },
