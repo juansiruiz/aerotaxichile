@@ -9,6 +9,8 @@ export default defineConfig({
   splitting: false,
   sourcemap: false,
   clean: true,
+  // Forzar bundle de paquetes del workspace (exportan .ts, no .js)
+  noExternal: [/@aerotaxi\/.*/],
   // Dependencias nativas que no se pueden empaquetar
   external: [
     'firebase-admin',

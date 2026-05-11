@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('drivers', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('license_number')->unique();
+            $table->boolean('is_available')->default(false);
+            $table->string('vehicle_id')->nullable();
+            $table->text('notes')->nullable();
+            $table->integer('commission_rate')->default(20);
+            $table->timestamps();
+
+            $table->foreign('id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+
+            $table->index('is_available');
+            $table->index('vehicle_id');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('drivers');
+    }
+};
